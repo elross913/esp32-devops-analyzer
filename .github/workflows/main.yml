@@ -33,7 +33,7 @@ jobs:
 
       - name: 🔍 Static Analysis (Quality Gate)
         # On échoue si des défauts majeurs sont trouvés
-        run: pio check --fail-on-defects high
+        run: pio check --fail-on-defect high
 
       - name: 📦 Archive Firmware
         # Permet de télécharger le .bin directement depuis GitHub
