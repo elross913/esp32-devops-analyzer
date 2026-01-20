@@ -1,0 +1,43 @@
+name: Embedded Software Factory
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 🏗️ Cache PlatformIO
+        uses: actions/cache@v3
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-pio
+
+      - name: 🚀 Install PlatformIO
+        run: pip install -U platformio
+
+      - name: 🛠️ Build Firmware
+        run: pio run
+
+      - name: 🔍 Static Analysis (Quality Gate)
+        # On échoue si des défauts majeurs sont trouvés
+        run: pio check --fail-on-defects high
+
+      - name: 📦 Archive Firmware
+        # Permet de télécharger le .bin directement depuis GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-esp32
+          path: .pio/build/esp32dev/firmware.bin
