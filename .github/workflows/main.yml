@@ -29,15 +29,19 @@ jobs:
         run: pip install -U platformio
 
       - name: 🛠️ Build Firmware
+        # On définit la variable PIO_BUILD_DIR ici pour l'usine
         run: pio run
+        env:
+          PIO_BUILD_DIR: ${{ github.workspace }}/.pio/build
 
       - name: 🔍 Static Analysis (Quality Gate)
-        # On échoue si des défauts majeurs sont trouvés
         run: pio check --fail-on-defect high
+        env:
+          PIO_BUILD_DIR: ${{ github.workspace }}/.pio/build
 
       - name: 📦 Archive Firmware
-        # Permet de télécharger le .bin directement depuis GitHub
         uses: actions/upload-artifact@v4
         with:
           name: firmware-esp32
+          # On pointe vers le bon chemin de sortie
           path: .pio/build/esp32dev/firmware.bin
